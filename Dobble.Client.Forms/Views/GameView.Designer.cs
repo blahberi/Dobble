@@ -65,7 +65,7 @@
             // 
             // Card1
             // 
-            this.Card1.BackColor = System.Drawing.Color.White;
+            this.Card1.BackColor = System.Drawing.Color.Transparent;
             this.Card1.Disabled = false;
             this.Card1.Dock = System.Windows.Forms.DockStyle.Left;
             this.Card1.Location = new System.Drawing.Point(0, 0);
@@ -75,7 +75,7 @@
             // 
             // Card2
             // 
-            this.Card2.BackColor = System.Drawing.Color.White;
+            this.Card2.BackColor = System.Drawing.Color.Transparent;
             this.Card2.Disabled = false;
             this.Card2.Dock = System.Windows.Forms.DockStyle.Right;
             this.Card2.Location = new System.Drawing.Point(400, 0);

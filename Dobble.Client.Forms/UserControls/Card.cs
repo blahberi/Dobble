@@ -21,7 +21,6 @@ namespace Dobble.Client.Forms.UserControls
 			this.Selected = -1;
 
 			this.CardBackColor = GruvboxTheme.CreamText;
-			this.BackColor = Color.Transparent;
 		}
 
 		public event Action OnSymbolSelected;
@@ -245,7 +244,7 @@ namespace Dobble.Client.Forms.UserControls
 
 		public void SelectSymbol()
 		{
-			this.backgroundCircleColor = GruvboxTheme.PrimaryColor;
+			this.backgroundCircleColor = GruvboxTheme.SecondaryColor;
 			if (this.Parent == null) { return; };
 			this.Parent.Refresh();
 		}
