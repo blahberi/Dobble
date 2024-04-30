@@ -10,6 +10,13 @@ using Dobble.Shared.DTOs;
 
 namespace Dobble.Shared.Framework
 {
+
+	/// <summary>
+	/// A protocol session that handles the communication between the client and the server.
+	/// The communication is done using a bidirectional stream of messages using TCP
+	/// The messages are serialized using JSON
+	/// </summary>
+	/// <typeparam name="TConnectionContext"></typeparam>
 	internal class ProtocolSession<TConnectionContext> : IProtocolSession, IRequestManager where TConnectionContext : ConnectionContext, new()
 	{
 		private readonly IControllerFactory<TConnectionContext> controllerFactory;
@@ -19,11 +26,17 @@ namespace Dobble.Shared.Framework
 		private readonly StreamWriter writer;
 		private readonly StreamReader reader;
 		private readonly JavaScriptSerializer serializer;
-		private readonly Dictionary<Guid, TaskCompletionSource<string>> pendingClientRequests;
-		private readonly Dictionary<Guid, CancellationTokenSource> pendingHandledRequests;
-		private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);  // Initial count is 1, meaning one concurrent access allowed.
+		private readonly Dictionary<Guid, TaskCompletionSource<string>> pendingClientRequests; // Used to store requests that are waiting for a response
+		private readonly Dictionary<Guid, CancellationTokenSource> pendingHandledRequests; // Used to cancel requests that are being handled
+		private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);  // Binary semaphore for synchronizing writes to the stream
 		private Task messageLoop;
 
+		/// <summary>
+		/// Constructor for a protocol session
+		/// </summary>
+		/// <param name="controllerFactory"></param>
+		/// <param name="serviceLocator"></param>
+		/// <param name="tcpClient"></param>
 		public ProtocolSession(IControllerFactory<TConnectionContext> controllerFactory, IServiceLocator serviceLocator, TcpClient tcpClient)
 		{
 			this.connectionContext = new TConnectionContext();
@@ -42,8 +55,15 @@ namespace Dobble.Shared.Framework
 			this.pendingHandledRequests = new Dictionary<Guid, CancellationTokenSource>();
 		}
 
+		/// <summary>
+		/// The request manager for the session.
+		/// Allows you to send requests.
+		/// </summary>
 		public IRequestManager RequestManager => this;
 
+		/// <summary>
+		/// Disposes the session
+		/// </summary>
 		public void Dispose()
 		{
 			this.CancelAllPendingRequests();
@@ -53,16 +73,35 @@ namespace Dobble.Shared.Framework
 			this.tcpClient.Dispose();
 		}
 
+		/// <summary>
+		/// Waits for the session to end.
+		/// Since the session runs asynchronously, this method can be used to wait for the session to end
+		/// before disposing the session.
+		/// This method prevents the session from being disposed by garbage collection while it is still runnin
+		/// </summary>
+		/// <returns></returns>
 		public Task WaitForSessionToEnd()
 		{
 			return this.messageLoop;
 		}
 
+		/// <summary>
+		/// Starts the message loop for the session.
+		/// </summary>
 		public void StartMessageLoop()
 		{
 			this.messageLoop = this.HandleMessageLoopAsync();
 		}
 
+		/// <summary>
+		/// Sends a request to the server
+		/// This method will return a task which will be completed with the response to the request.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="method"></param>
+		/// <param name="requestBody"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns>A task which will be completed with the response to the request</returns>
 		public async Task<string> SendRequest(string path, string method, object requestBody = null, CancellationToken cancellationToken = default)
 		{
 			Guid messageId = Guid.NewGuid();
@@ -88,6 +127,10 @@ namespace Dobble.Shared.Framework
 			return await tcs.Task.ConfigureAwait(false);
 		}
 
+		/// <summary>
+		/// A loop for handling messages from the other side of the connection.
+		/// </summary>
+		/// <returns></returns>
 		private async Task HandleMessageLoopAsync()
 		{
 			try
@@ -130,12 +173,21 @@ namespace Dobble.Shared.Framework
 			}
 		}
 
+		/// <summary>
+		/// Cancels all requests that have not been responded to yet.
+		/// This method will set the result of the request tasks to an exception.
+		/// </summary>
 		private void CancelAllPendingRequests()
 		{
 			this.pendingClientRequests.Values.ForEach(tcs => tcs.SetException(new ObjectDisposedException("Disconnected")));
 			this.pendingClientRequests.Clear();
 		}
 
+		/// <summary>
+		/// Handles a response to a request
+		/// This method will set the result of the request task.
+		/// </summary>
+		/// <param name="response"></param>
 		private void HandleRequestReponse(Message response)
 		{
 			TaskCompletionSource<string> tcs;
@@ -161,6 +213,11 @@ namespace Dobble.Shared.Framework
 			}
 		}
 
+		/// <summary>
+		/// Handles a request cancellation.
+		/// This method will cancel the handled request.
+		/// </summary>
+		/// <param name="request"></param>
 		private void HandleRequestCancellation(Message request)
 		{
 			CancellationTokenSource cancellationTokenSource;
@@ -175,7 +232,11 @@ namespace Dobble.Shared.Framework
 			cancellationTokenSource.Cancel();
 		}
 
-
+		/// <summary>
+		/// Handles an incomming request.
+		/// this method just calls the asynchronous version of the method.
+		/// </summary>
+		/// <param name="request"></param>
 		private async void HandleIncommingRequest(Message request)
 		{
 			// We want to to handle the request logic asynchornously without blocking the thread, but we do not want to wait for it
@@ -185,6 +246,12 @@ namespace Dobble.Shared.Framework
 			await this.HandleIncommingRequestAsync(request);
 		}
 
+		/// <summary>
+		/// Handles an incomming request asynchronously.
+		/// This method will handle the request and send a response back to the client.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
 		private async Task HandleIncommingRequestAsync(Message request)
 		{
 			Response response;
@@ -238,6 +305,12 @@ namespace Dobble.Shared.Framework
 			}
 		}
 
+		/// <summary>
+		/// Sends a message to the other side of the connection.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="messageId"></param>
+		/// <returns></returns>
 		private async Task SendMessage(Message message, Guid messageId)
 		{
 			message.MessageId = messageId;

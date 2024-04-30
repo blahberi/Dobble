@@ -2,6 +2,9 @@
 
 namespace Dobble.Shared.DTOs.Game
 {
+	/// <summary>
+	/// DTO that contains the information about the game that has ended.
+	/// </summary>
 	public class GameOver
 	{
 		public Guid GameId { get; set; }

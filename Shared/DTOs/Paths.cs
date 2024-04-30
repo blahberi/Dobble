@@ -1,5 +1,8 @@
 ﻿namespace Dobble.Shared.DTOs
 {
+	/// <summary>
+	/// All the paths that are used in this project
+	/// </summary>
 	public static class Paths
 	{
 		public const string Cancellation = "Cancellation";

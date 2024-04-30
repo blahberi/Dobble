@@ -8,8 +8,24 @@ using Dobble.Shared.Framework;
 
 namespace Dobble.Shared
 {
+	/// <summary>
+	/// A class that contains extension methods for sending requests
+	/// </summary>
 	public static class Requests
 	{
+		/// <summary>
+		///  Request for signing up a new user
+		/// </summary>
+		/// <param name="connectionContext"></param>
+		/// <param name="userName"></param>
+		/// <param name="password"></param>
+		/// <param name="email"></param>
+		/// <param name="firstName"></param>
+		/// <param name="lastName"></param>
+		/// <param name="country"></param>
+		/// <param name="city"></param>
+		/// <param name="gender"></param>
+		/// <returns></returns>
 		public static Task SendUserRegistration(
 			this ConnectionContext connectionContext,
 			string userName,
@@ -32,6 +48,13 @@ namespace Dobble.Shared
 				gender);
 		}
 
+		/// <summary>
+		/// Request for signing in a user
+		/// </summary>
+		/// <param name="connectionContext"></param>
+		/// <param name="userName"></param>
+		/// <param name="password"></param>
+		/// <returns></returns>
 		public static Task SendUserSignin(
 			this ConnectionContext connectionContext,
 			string userName,
@@ -40,6 +63,12 @@ namespace Dobble.Shared
 			return connectionContext.RequestManager.SendUserSignin(userName, password);
 		}
 
+		/// <summary>
+		/// Request for signing out a user
+		/// </summary>
+		/// <param name="connectionContext"></param>
+		/// <param name="userName"></param>
+		/// <returns></returns>
 		public static Task SendUserSignout(
 			this ConnectionContext connectionContext,
 			string userName)
@@ -47,6 +76,13 @@ namespace Dobble.Shared
 			return connectionContext.RequestManager.SendUserSignout(userName);
 		}
 
+		/// <summary>
+		/// Request for sending a game invite from the server
+		/// </summary>
+		/// <param name="connectionContext"></param>
+		/// <param name="opponentUsername"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public static Task<GameInviteServerResponse> SendServerGameInvite(
 			this ConnectionContext connectionContext,
 			string opponentUsername,
@@ -55,6 +91,13 @@ namespace Dobble.Shared
 			return connectionContext.RequestManager.SendServerGameInvite(opponentUsername, cancellationToken);
 		}
 
+		/// <summary>
+		/// Request for sending a game invite from the client
+		/// </summary>
+		/// <param name="connectionContext"></param>
+		/// <param name="opponentUsername"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public static Task<GameInviteUserResponse> SendClientGameInvite(
 			this ConnectionContext connectionContext,
 			string opponentUsername,
@@ -63,6 +106,19 @@ namespace Dobble.Shared
 			return connectionContext.RequestManager.SendClientGameInvite(opponentUsername, cancellationToken);
 		}
 
+		/// <summary>
+		/// Request for sending the state of the next turn of the game
+		/// </summary>
+		/// <param name="connectionContext"></param>
+		/// <param name="gameId"></param>
+		/// <param name="player1Name"></param>
+		/// <param name="player1Score"></param>
+		/// <param name="player2Name"></param>
+		/// <param name="player2Score"></param>
+		/// <param name="cards"></param>
+		/// <param name="previousTurnWinner"></param>
+		/// <param name="previousTurnIndices"></param>
+		/// <returns></returns>
 		public static Task SendGameNextTurn(
 			this ConnectionContext connectionContext,
 			in Guid gameId,
@@ -78,6 +134,19 @@ namespace Dobble.Shared
 				gameId, player1Name, player1Score, player2Name, player2Score, cards, previousTurnWinner, previousTurnIndices);
 		}
 
+		/// <summary>
+		/// Request for sending the state of the game after it is over
+		/// </summary>
+		/// <param name="connectionContext"></param>
+		/// <param name="gameId"></param>
+		/// <param name="winner"></param>
+		/// <param name="player1Name"></param>
+		/// <param name="player1Score"></param>
+		/// <param name="player2Name"></param>
+		/// <param name="player2Score"></param>
+		/// <param name="previousTurnWinner"></param>
+		/// <param name="previousTurnIndices"></param>
+		/// <returns></returns>
 		public static Task SendGameOver(
 			this ConnectionContext connectionContext,
 			in Guid gameId,
@@ -92,6 +161,12 @@ namespace Dobble.Shared
 			return connectionContext.RequestManager.SendGameOver(gameId, winner, player1Name, player1Score, player2Name, player2Score, previousTurnWinner, previousTurnIndices);
 		}
 
+		/// <summary>
+		/// Request for leaving a game
+		/// </summary>
+		/// <param name="connectionContext"></param>
+		/// <param name="gameId"></param>
+		/// <returns></returns>
 		public static Task SendLeaveGame(
 			this ConnectionContext connectionContext,
 			in Guid gameId)
@@ -99,6 +174,13 @@ namespace Dobble.Shared
 			return connectionContext.RequestManager.SendLeaveGame(gameId);
 		}
 
+		/// <summary>
+		/// Request for sending the selected indices of the cards in a game turn
+		/// </summary>
+		/// <param name="connectionContext"></param>
+		/// <param name="gameId"></param>
+		/// <param name="selectedIndices"></param>
+		/// <returns></returns>
 		public static Task SendGameTurnSelection(
 			this ConnectionContext connectionContext,
 			Guid gameId,
@@ -109,7 +191,19 @@ namespace Dobble.Shared
 
 
 		// Extension methods
-
+		/// <summary>
+		/// Request for signing up a new user
+		/// </summary>
+		/// <param name="requestManager"></param>
+		/// <param name="userName"></param>
+		/// <param name="password"></param>
+		/// <param name="email"></param>
+		/// <param name="firstName"></param>
+		/// <param name="lastName"></param>
+		/// <param name="country"></param>
+		/// <param name="city"></param>
+		/// <param name="gender"></param>
+		/// <returns></returns>
 		public static Task SendUserRegistration(
 			this IRequestManager requestManager,
 			string userName,
@@ -134,6 +228,13 @@ namespace Dobble.Shared
 			});
 		}
 
+		/// <summary>
+		/// Request for signing in a user
+		/// </summary>
+		/// <param name="requestManager"></param>
+		/// <param name="userName"></param>
+		/// <param name="password"></param>
+		/// <returns></returns>
 		public static Task SendUserSignin(
 			this IRequestManager requestManager,
 			string userName,
@@ -145,7 +246,13 @@ namespace Dobble.Shared
 				Password = password
 			});
 		}
-
+		
+		/// <summary>
+		/// Request for signing out a user
+		/// </summary>
+		/// <param name="requestManager"></param>
+		/// <param name="userName"></param>
+		/// <returns></returns>
 		public static Task SendUserSignout(
 			this IRequestManager requestManager,
 			string userName)
@@ -156,6 +263,13 @@ namespace Dobble.Shared
 			});
 		}
 
+		/// <summary>
+		/// Request for sending a game invite from the server
+		/// </summary>
+		/// <param name="requestManager"></param>
+		/// <param name="opponentUsername"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public static Task<GameInviteServerResponse> SendServerGameInvite(
 			this IRequestManager requestManager,
 			string opponentUsername,
@@ -167,6 +281,13 @@ namespace Dobble.Shared
 			}, cancellationToken);
 		}
 
+		/// <summary>
+		/// Request for sending a game invite from the client
+		/// </summary>
+		/// <param name="requestManager"></param>
+		/// <param name="opponentUsername"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public static Task<GameInviteUserResponse> SendClientGameInvite(
 			this IRequestManager requestManager,
 			string opponentUsername,
@@ -178,6 +299,19 @@ namespace Dobble.Shared
 			}, cancellationToken);
 		}
 
+		/// <summary>
+		/// Request for sending the state of the next turn of the game
+		/// </summary>
+		/// <param name="requestManager"></param>
+		/// <param name="gameId"></param>
+		/// <param name="player1Name"></param>
+		/// <param name="player1Score"></param>
+		/// <param name="player2Name"></param>
+		/// <param name="player2Score"></param>
+		/// <param name="cards"></param>
+		/// <param name="previousTurnWinner"></param>
+		/// <param name="previousTurnIndices"></param>
+		/// <returns></returns>
 		public static Task SendGameNextTurn(
 			this IRequestManager requestManager,
 			in Guid gameId,
@@ -201,7 +335,20 @@ namespace Dobble.Shared
 				PreviousTurnIndices = previousTurnIndices
 			});
 		}
-
+		
+		/// <summary>
+		/// Request for sending the state of the game after it is over
+		/// </summary>
+		/// <param name="requestManager"></param>
+		/// <param name="gameId"></param>
+		/// <param name="winner"></param>
+		/// <param name="player1Name"></param>
+		/// <param name="player1Score"></param>
+		/// <param name="player2Name"></param>
+		/// <param name="player2Score"></param>
+		/// <param name="previousTurnWinner"></param>
+		/// <param name="previousTurnIndices"></param>
+		/// <returns></returns>
 		public static Task SendGameOver(
 			this IRequestManager requestManager,
 			in Guid gameId,
@@ -226,6 +373,12 @@ namespace Dobble.Shared
 			});
 		}
 
+		/// <summary>
+		/// Request for leaving a game
+		/// </summary>
+		/// <param name="requestManager"></param>
+		/// <param name="gameId"></param>
+		/// <returns></returns>
 		public static Task SendLeaveGame(
 			this IRequestManager requestManager,
 			in Guid gameId)
@@ -236,6 +389,13 @@ namespace Dobble.Shared
 			});
 		}
 
+		/// <summary>
+		/// Request for sending the selected indices of the cards in a game turn
+		/// </summary>
+		/// <param name="requestManager"></param>
+		/// <param name="gameId"></param>
+		/// <param name="selectedIndices"></param>
+		/// <returns></returns>
 		public static Task SendGameTurnSelection(
 			this IRequestManager requestManager,
 			Guid gameId,

@@ -6,11 +6,20 @@ using Dobble.Shared.Framework;
 
 namespace Dobble.Server
 {
+	/// <summary>
+	/// The TCP server that listens for incoming connections.
+	/// This is the lowest level of the server (in terms of abstraction)
+	/// </summary>
 	internal class TcpServer
 	{
 		private readonly TcpListener listener;
 		private readonly IProtocolManager protocolManager;
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="protocolManager">Protocol Manager which will allow the TCP client to create protcol sessions</param>
+		/// <param name="port">The the server is listening on</param>
 		public TcpServer(IProtocolManager protocolManager, int port)
 		{
 			this.listener = new TcpListener(IPAddress.Any, port);

@@ -1,5 +1,8 @@
 ﻿namespace Dobble.Shared.DTOs.Users
 {
+	/// <summary>
+	/// DTO of a user registration message.
+	/// </summary>
 	public class UserRegistration
 	{
 		public string Username { get; set; }

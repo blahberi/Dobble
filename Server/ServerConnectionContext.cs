@@ -5,8 +5,14 @@ using Dobble.Shared.Framework;
 
 namespace Dobble.Server
 {
+	/// <summary>
+	/// Server side connection context.
+	/// </summary>
 	internal class ServerConnectionContext : ConnectionContext
 	{
+		/// <summary>
+		/// Constructor.
+		/// </summary>
 		public ServerConnectionContext()
 		{
 			this.User = null;
@@ -19,16 +25,25 @@ namespace Dobble.Server
 
 		public event Action GameInviteCancelled;
 
+		/// <summary>
+		/// Disposes the connection context.
+		/// </summary>
 		override public void Dispose()
 		{
 			this.SignoutUser();
 		}
 
+		/// <summary>
+		/// Cancels the game invite.
+		/// </summary>
 		public void CancelGameInvite()
 		{
 			GameInviteCancelled?.Invoke();
 		}
 
+		/// <summary>
+		/// Signs out the user
+		/// </summary>
 		public void SignoutUser()
 		{
 			if (this.Game != null)

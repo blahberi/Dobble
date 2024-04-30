@@ -6,6 +6,13 @@ namespace Dobble.Shared.Framework
 {
 	internal static class HttpStatusExceptionMapper
 	{
+		/// <summary>
+		/// Gets an exception for a given HTTP status code
+		/// This is used for throwing exceptions based on the HTTP status code in the response.
+		/// </summary>
+		/// <param name="statusCode"></param>
+		/// <param name="errorMessage"></param>
+		/// <returns></returns>
 		public static Exception GetExceptionForStatusCode(HttpStatusCode statusCode, string errorMessage = null)
 		{
 			switch (statusCode)

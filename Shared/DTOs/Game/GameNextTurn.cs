@@ -2,6 +2,9 @@
 
 namespace Dobble.Shared.DTOs.Game
 {
+	/// <summary>
+	/// DTO for the next turn in a game.
+	/// </summary>
 	public class GameNextTurn
 	{
 		public Guid GameId { get; set; }

@@ -45,7 +45,6 @@
     <Compile Include="DTOs\FailureBody.cs" />
     <Compile Include="DTOs\Game\GameInviteUserResponse.cs" />
     <Compile Include="DTOs\Game\GameInvite.cs" />
-    <Compile Include="DTOs\Game\GameFinished.cs" />
     <Compile Include="DTOs\Game\GameLeave.cs" />
     <Compile Include="DTOs\Game\GameNextTurn.cs" />
     <Compile Include="DTOs\Game\GameOver.cs" />

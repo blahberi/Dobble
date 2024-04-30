@@ -7,18 +7,31 @@ using Dobble.Shared.Framework;
 
 namespace Dobble.Server.Services
 {
+	/// <summary>
+	/// The server-side game service.
+	/// This service is responsible for handling all the games and game related operations.
+	/// </summary>
 	internal class GameService : IGameService
 	{
 		private readonly IUserService userService;
-		// A single lock is use here for simplicity. In a real-world scenario, a lock should be used for each game but its harder to implement correctly.
-		// Its not worth the effort because we don't assume many concurrent game creations.
-		private readonly object syncLock = new object();
+		private readonly object syncLock = new object(); // Single lock for all games.
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="userService"></param>
 		public GameService(IUserService userService)
 		{
 			this.userService = userService;
 		}
 
+		/// <summary>
+		/// Invites an opponent to a game.
+		/// </summary>
+		/// <param name="currentUserConnectionContext"></param>
+		/// <param name="opponentUserName"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public async Task<Result<Guid>> Invite(ServerConnectionContext currentUserConnectionContext, string opponentUserName, CancellationToken cancellationToken)
 		{
 			ServerConnectionContext opponentUserConnectionContext;
@@ -64,6 +77,12 @@ namespace Dobble.Server.Services
 			return Result<Guid>.SuccessResult(game.Id);
 		}
 
+		/// <summary>
+		/// Get the opponent's user connection context.
+		/// </summary>
+		/// <param name="currentUserConnectionContext"></param>
+		/// <param name="opponentUserName"></param>
+		/// <returns></returns>
 		private Result<ServerConnectionContext> GetOpponentUserConnectionContext(ServerConnectionContext currentUserConnectionContext, string opponentUserName)
 		{
 			ServerConnectionContext opponentUserConnectionContext;
@@ -87,6 +106,14 @@ namespace Dobble.Server.Services
 			return Result<ServerConnectionContext>.SuccessResult(opponentUserConnectionContext);
 		}
 
+		/// <summary>
+		/// When a client sends it's symbol selection for the game,
+		/// this method is called to check it and return whether it is correct or not.
+		/// </summary>
+		/// <param name="currentUserConnectionContext"></param>
+		/// <param name="selection"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException"></exception>
 		public Task<bool> TurnSelection(ServerConnectionContext currentUserConnectionContext, int[] selection)
 		{
 			if (currentUserConnectionContext.Game == null)
@@ -97,6 +124,12 @@ namespace Dobble.Server.Services
 			return currentUserConnectionContext.Game.ProcessUserSelection(currentUserConnectionContext, selection);
 		}
 
+		/// <summary>
+		/// This method is called when a client wants to leave a game.
+		/// </summary>
+		/// <param name="currentUserConnectionContext"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException"></exception>
 		public Task LeaveGame(ServerConnectionContext currentUserConnectionContext)
 		{
 			if (currentUserConnectionContext.Game == null)
