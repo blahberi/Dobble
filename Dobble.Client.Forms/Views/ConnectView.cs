@@ -1,6 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Dobble.Shared;
 
 namespace Dobble.Client.Forms
 {
@@ -9,6 +14,7 @@ namespace Dobble.Client.Forms
 		private readonly GameUIManager gameUIManager;
 		bool connecting = false;
 		TcpClient client;
+		Stream encryptedStream;
 
 		public ConnectView(GameUIManager gameUIManager)
 		{
@@ -43,7 +49,10 @@ namespace Dobble.Client.Forms
 
 					await this.client.ConnectAsync(this.IPText.Text, int.Parse(this.PortText.Text));
 
-					this.gameUIManager.ClientConnected(this.client);
+
+					await this.InitiateEncryptionAsync();
+
+					this.gameUIManager.ClientConnected(this.client, this.encryptedStream);
 				}
 				catch (Exception)
 				{
@@ -59,6 +68,32 @@ namespace Dobble.Client.Forms
 			this.ConnectButton.Text = "Connect";
 			this.IPText.Enabled = true;
 			this.PortText.Enabled = true;
+		}
+
+		private async Task InitiateEncryptionAsync()
+		{
+			// Receive public key from server asynchronously
+			NetworkStream stream = this.client.GetStream();
+			StreamReader reader = new StreamReader(stream);
+			string publicKey = await reader.ReadLineAsync();
+
+			// Create AES key
+			AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
+			aes.GenerateKey();
+			aes.GenerateIV();
+
+			// Encrypt AES key with RSA public key
+			RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+			rsa.FromXmlString(publicKey);
+			byte[] encryptedKey = rsa.Encrypt(aes.Key, false);
+			string encryptedKeyString = Convert.ToBase64String(encryptedKey);
+
+			// Send encrypted AES key to server asynchronously
+			StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
+			await writer.WriteLineAsync(encryptedKeyString);
+			await writer.WriteLineAsync(Convert.ToBase64String(aes.IV));
+
+			this.encryptedStream = EncryptedTcp.SetupEncryptedStream(this.client, aes.Key, aes.IV);
 		}
 	}
 }

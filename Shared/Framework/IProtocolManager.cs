@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.IO;
+using System.Net.Sockets;
 
 namespace Dobble.Shared.Framework
 {
@@ -13,6 +14,6 @@ namespace Dobble.Shared.Framework
 		/// </summary>
 		/// <param name="tcpClient"></param>
 		/// <returns></returns>
-		IProtocolSession CreateSession(TcpClient tcpClient);
+		IProtocolSession CreateSession(TcpClient tcpClient, Stream communicationStream);
 	}
 }

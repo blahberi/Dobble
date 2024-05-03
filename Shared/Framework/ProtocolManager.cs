@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.IO;
+using System.Net.Sockets;
 
 namespace Dobble.Shared.Framework
 {
@@ -27,9 +28,9 @@ namespace Dobble.Shared.Framework
 		/// </summary>
 		/// <param name="tcpClient"></param>
 		/// <returns></returns>
-		public IProtocolSession CreateSession(TcpClient tcpClient)
+		public IProtocolSession CreateSession(TcpClient tcpClient, Stream communicationStream)
 		{
-			ProtocolSession<TConnectionContext> protocolSession = new ProtocolSession<TConnectionContext>(this.controllerFactory, this.serviceLocator, tcpClient);
+			ProtocolSession<TConnectionContext> protocolSession = new ProtocolSession<TConnectionContext>(this.controllerFactory, this.serviceLocator, tcpClient, communicationStream);
 
 			protocolSession.StartMessageLoop();
 

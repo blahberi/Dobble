@@ -1,8 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Dobble.Shared.Framework;
+using Dobble.Shared;
+using System.Text;
 
 namespace Dobble.Server
 {
@@ -49,7 +53,27 @@ namespace Dobble.Server
 
 		private async Task HandleClientAsync(TcpClient client)
 		{
-			using (IProtocolSession session = this.protocolManager.CreateSession(client))
+			RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+			string publicKey = rsa.ToXmlString(false);
+
+			// Send public key to client asynchronously
+			NetworkStream stream = client.GetStream();
+			StreamWriter writer = new StreamWriter(stream) { AutoFlush = true };
+			await writer.WriteLineAsync(publicKey);
+
+			// Receive AES key from client asynchronously
+			StreamReader reader = new StreamReader(stream);
+			string encryptedKey = await reader.ReadLineAsync();
+			string ivString = await reader.ReadLineAsync();
+			byte[] keyBytes = Convert.FromBase64String(encryptedKey);
+			byte[] aesKey = rsa.Decrypt(keyBytes, false);
+			byte[] aesIV = Convert.FromBase64String(ivString);
+
+
+			Stream encryptedStream = EncryptedTcp.SetupEncryptedStream(client, aesKey, aesIV);
+
+			// Use encryptedClient in your session
+			using (IProtocolSession session = this.protocolManager.CreateSession(client, encryptedStream))
 			{
 				await session.WaitForSessionToEnd();
 			}

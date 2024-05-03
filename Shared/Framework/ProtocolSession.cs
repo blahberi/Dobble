@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -22,7 +24,7 @@ namespace Dobble.Shared.Framework
 		private readonly IControllerFactory<TConnectionContext> controllerFactory;
 		private readonly TcpClient tcpClient;
 		private readonly TConnectionContext connectionContext;
-		private readonly NetworkStream stream;
+		private readonly Stream stream;
 		private readonly StreamWriter writer;
 		private readonly StreamReader reader;
 		private readonly JavaScriptSerializer serializer;
@@ -37,7 +39,11 @@ namespace Dobble.Shared.Framework
 		/// <param name="controllerFactory"></param>
 		/// <param name="serviceLocator"></param>
 		/// <param name="tcpClient"></param>
-		public ProtocolSession(IControllerFactory<TConnectionContext> controllerFactory, IServiceLocator serviceLocator, TcpClient tcpClient)
+		public ProtocolSession(
+			IControllerFactory<TConnectionContext> controllerFactory, 
+			IServiceLocator serviceLocator, 
+			TcpClient tcpClient, 
+			Stream communicationStream)
 		{
 			this.connectionContext = new TConnectionContext();
 			this.connectionContext.RequestManager = this;
@@ -45,7 +51,7 @@ namespace Dobble.Shared.Framework
 
 			this.controllerFactory = controllerFactory;
 			this.tcpClient = tcpClient;
-			this.stream = this.tcpClient.GetStream();
+			this.stream = communicationStream;
 			this.reader = new StreamReader(this.stream);
 			this.writer = new StreamWriter(this.stream) { AutoFlush = true };
 

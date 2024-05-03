@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
@@ -81,10 +82,10 @@ namespace Dobble.Client.Forms
 		public bool YouWon { get; private set; }
 
 
-		public void ClientConnected(TcpClient client)
+		public void ClientConnected(TcpClient client, Stream communicationStream)
 		{
 			this.ActiveControl = new LoginView(this);
-			this.session = this.protocolManager.CreateSession(client);
+			this.session = this.protocolManager.CreateSession(client, communicationStream);
 			this.gameService.SessionStarted(this.session);
 		}
 
