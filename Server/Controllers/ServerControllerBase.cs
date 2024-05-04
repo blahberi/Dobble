@@ -11,6 +11,10 @@ namespace Dobble.Server.Controllers
 
 		protected bool IsAuthorized => this.ConnectionContext.User != null;
 
+		/// <summary>
+		/// Checks if a user is signed in.
+		/// </summary>
+		/// <exception cref="UnauthorizedAccessException"></exception>
 		public void Authorize()
 		{
 			if (!this.IsAuthorized)

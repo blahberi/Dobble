@@ -15,6 +15,12 @@ namespace Dobble.Server.Controllers
 		{
 		}
 
+		/// <summary>
+		/// Processes the request and returns the response.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="cancellation"></param>
+		/// <returns></returns>
 		public override async Task<Response> ProcessRequestAsync(Message message, CancellationToken cancellation)
 		{
 			switch (message.Method)
@@ -30,6 +36,11 @@ namespace Dobble.Server.Controllers
 			}
 		}
 
+		/// <summary>
+		/// Registers a new user.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		private async Task<Response> Register(Message message)
 		{
 			UserRegistration userRegistration = this.GetRequestBody<UserRegistration>(message);
@@ -44,6 +55,11 @@ namespace Dobble.Server.Controllers
 			return Response.OK($"User {userRegistration.Username} Added");
 		}
 
+		/// <summary>
+		/// Signs in a user.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		private async Task<Response> Signin(Message message)
 		{
 			UserSignin userSignin = this.GetRequestBody<UserSignin>(message);
@@ -62,6 +78,11 @@ namespace Dobble.Server.Controllers
 			return Response.OK($"User {userSignin.Username} signed in");
 		}
 
+		/// <summary>
+		/// Signs out a user.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		private Task<Response> Signout(Message message)
 		{
 			this.Authorize();

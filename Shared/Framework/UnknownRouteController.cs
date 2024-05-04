@@ -13,8 +13,8 @@ namespace Dobble.Shared.Framework
 		/// <summary>
 		/// Processes the request and returns a response
 		/// </summary>
-		/// <param name="message"></param>
-		/// <param name="cancellation"></param>
+		/// <param name="message">The incomming message</param>
+		/// <param name="cancellation">cancellation token for cancelling the request</param>
 		/// <returns></returns>
 		public Task<Response> ProcessRequestAsync(Message message, CancellationToken cancellation)
 		{

@@ -14,8 +14,8 @@ namespace Dobble.Shared.Framework
 		/// <summary>
 		/// Constructor for a response
 		/// </summary>
-		/// <param name="responseText"></param>
-		/// <param name="httpStatusCode"></param>
+		/// <param name="responseText">the response's contents</param>
+		/// <param name="httpStatusCode">Response status code</param>
 		private Response(string responseText, HttpStatusCode httpStatusCode)
 		{
 			this.ResponseText = responseText;
@@ -49,7 +49,7 @@ namespace Dobble.Shared.Framework
 		/// <summary>
 		/// Creates a successful response with a response text
 		/// </summary>
-		/// <param name="responseText"></param>
+		/// <param name="responseText">The contents of the response</param>
 		/// <returns></returns>
 		public static Response OK(string responseText)
 		{
@@ -60,7 +60,7 @@ namespace Dobble.Shared.Framework
 		/// Creates a successful response with a response value
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="responseValue"></param>
+		/// <param name="responseValue">The value of the response</param>
 		/// <returns></returns>
 		public static Response OK<T>(T responseValue)
 		{
@@ -73,8 +73,8 @@ namespace Dobble.Shared.Framework
 		/// <summary>
 		/// Creates a failed response with an error
 		/// </summary>
-		/// <param name="responseText"></param>
-		/// <param name="httpStatusCode"></param>
+		/// <param name="responseText">The contents of the response</param>
+		/// <param name="httpStatusCode">The response's status code</param>
 		/// <returns></returns>
 		public static Response Error(string responseText, HttpStatusCode httpStatusCode)
 		{

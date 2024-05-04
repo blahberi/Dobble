@@ -8,6 +8,9 @@ using System.Windows.Forms;
 
 namespace Dobble.Client.Forms
 {
+	/// <summary>
+	/// UI Color theme.
+	/// </summary>
 	public static class GruvboxTheme
 	{
 		public static Color Orange { get; } = ColorFromHex("fe8019");

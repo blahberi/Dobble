@@ -12,8 +12,8 @@ namespace Dobble.Shared.Framework
 		/// <summary>
 		/// Constructor for a result
 		/// </summary>
-		/// <param name="success"></param>
-		/// <param name="errorMessage"></param>
+		/// <param name="success">Is the result a success</param>
+		/// <param name="errorMessage">Error message incase the result isn't a success</param>
 		protected Result(bool success, string errorMessage)
 		{
 			this.Success = success;
@@ -101,7 +101,7 @@ namespace Dobble.Shared.Framework
 		/// <summary>
 		/// Creates a successful result with a value
 		/// </summary>
-		/// <param name="value"></param>
+		/// <param name="value">the value contained in the result</param>
 		/// <returns></returns>
 		public static Result<T> SuccessResult(T value)
 		{
@@ -111,7 +111,7 @@ namespace Dobble.Shared.Framework
 		/// <summary>
 		///	Creates a failed result with a value
 		/// </summary>
-		/// <param name="errorMessage"></param>
+		/// <param name="errorMessage">the error message for the result</param>
 		/// <returns></returns>
 		public static new Result<T> FailureResult(string errorMessage)
 		{

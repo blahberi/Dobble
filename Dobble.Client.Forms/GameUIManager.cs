@@ -18,6 +18,9 @@ using Dobble.Shared.Framework;
 
 namespace Dobble.Client.Forms
 {
+	/// <summary>
+	/// Manages the UI of the game.
+	/// </summary>
 	internal class GameUIManager
 	{
 		private readonly GameService gameService;
@@ -83,6 +86,11 @@ namespace Dobble.Client.Forms
 		public bool YouWon { get; private set; }
 
 
+		/// <summary>
+		/// Called when the client connects to the server
+		/// </summary>
+		/// <param name="client"></param>
+		/// <param name="communicationStream"></param>
 		public void ClientConnected(TcpClient client, Stream communicationStream)
 		{
 			this.ActiveControl = new LoginView(this);
@@ -90,11 +98,20 @@ namespace Dobble.Client.Forms
 			this.gameService.SessionStarted(this.session);
 		}
 
+		/// <summary>
+		/// Called when the user wants to register a new account
+		/// </summary>
 		public void ClientRegister()
 		{
 			this.ActiveControl = new RegisterView(this);
 		}
 
+		/// <summary>
+		/// Attempts to sign in the user.
+		/// </summary>
+		/// <param name="username"></param>
+		/// <param name="password"></param>
+		/// <returns></returns>
 		public async Task<bool> TrySignIn(string username, string password)
 		{
 			try
@@ -120,11 +137,26 @@ namespace Dobble.Client.Forms
 			}
 		}
 
+		/// <summary>
+		/// Called when the user has finished registering.
+		/// </summary>
 		private void ClientRegistered()
 		{
 			this.ClientReturnToLogin();
 		}
 
+		/// <summary>
+		/// Attempts to register a new user.
+		/// </summary>
+		/// <param name="username"></param>
+		/// <param name="password"></param>
+		/// <param name="email"></param>
+		/// <param name="firstName"></param>
+		/// <param name="lastName"></param>
+		/// <param name="country"></param>
+		/// <param name="city"></param>
+		/// <param name="gender"></param>
+		/// <returns></returns>
 		public async Task<bool> TryRegister(
 			string username, 
 			string password, 
@@ -160,6 +192,12 @@ namespace Dobble.Client.Forms
 			}
 		}
 
+		/// <summary>
+		/// Attemps to invite an opponent to a match.
+		/// </summary>
+		/// <param name="opponentUsername"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public async Task<bool> TryInvite(string opponentUsername, CancellationToken cancellationToken)
 		{
 			try
@@ -198,6 +236,10 @@ namespace Dobble.Client.Forms
 			}
 		}
 
+		/// <summary>
+		/// Signs out the current user.
+		/// </summary>
+		/// <returns></returns>
 		public async Task Signout()
 		{
 			try
@@ -211,41 +253,66 @@ namespace Dobble.Client.Forms
 			}
 		}
 
-		public void RemoveUser(InvitingUser invitingUser)
+		/// <summary>
+		/// Removes an inviting user from the list of inviting users.
+		/// </summary>
+		/// <param name="invitingUser"></param>
+		public void RemoveInvitingUser(InvitingUser invitingUser)
 		{
 			this.InvitingUsers.Remove(invitingUser);
 			this.OnGameInvite?.Invoke();
 		}
 
+		/// <summary>
+		/// Sends the selected pair to the server.
+		/// </summary>
+		/// <param name="index1"></param>
+		/// <param name="index2"></param>
 		public void SendPair(int index1, int index2)
 		{
 			if (this.gameId != Guid.Empty)
 			{
-				this.gameService.UpdateTurnSelection(index1, index2);
+				this.gameService.SubmitTurnSelection(index1, index2);
 			}
 		}
 
+		/// <summary>
+		/// Called when the game has finished.
+		/// </summary>
 		public void ClientGameFinished()
 		{
 			this.ActiveControl = new GameOverView(this);
 		}
 
+		/// <summary>
+		/// Called when the client wants to leave the game.
+		/// </summary>
 		public void ClientLeaveGame()
 		{
 			this.gameService.LeaveGame();
 			this.ClientGameFinished();
 		}
 
+		/// <summary>
+		/// Called when the client wants to return to the lobby.
+		/// </summary>
 		public void ClientReturnToLobby()
 		{
 			this.ActiveControl = new LobbyView(this);
 		}
 
+		/// <summary>
+		/// Called when the client wants to reutrn to the login screen.
+		/// </summary>
 		public void ClientReturnToLogin()
 		{
 			this.ActiveControl = new LoginView(this);
 		}
 
+		/// <summary>
+		/// Called when the client has logged in.
+		/// </summary>
+		/// <param name="userName"></param>
 		private void ClientLoggedIn(string userName)
 		{
 			this.UserName = userName;
@@ -254,6 +321,9 @@ namespace Dobble.Client.Forms
 			this.ActiveControl = new LobbyView(this);
 		}
 
+		/// <summary>
+		/// Called when the client has signed out.
+		/// </summary>
 		private void ClientSignedOut()
 		{
 			this.UserName = null;
@@ -261,6 +331,18 @@ namespace Dobble.Client.Forms
 			this.ActiveControl = new LoginView(this);
 		}
 
+		/// <summary>
+		/// Validate information with regex.
+		/// </summary>
+		/// <param name="username"></param>
+		/// <param name="password"></param>
+		/// <param name="email"></param>
+		/// <param name="firstName"></param>
+		/// <param name="lastName"></param>
+		/// <param name="country"></param>
+		/// <param name="city"></param>
+		/// <param name="gender"></param>
+		/// <returns></returns>
 		private bool ValidateInformation(
 			string username,
 			string password,

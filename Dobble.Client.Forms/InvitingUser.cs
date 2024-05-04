@@ -3,6 +3,9 @@ using Dobble.Client.Forms.Services;
 
 namespace Dobble.Client.Forms
 {
+	/// <summary>
+	/// Class that represents a user that is inviting the current user to a game.
+	/// </summary>
 	internal class InvitingUser
 	{
 		private readonly GameUIManager gameUIManager;
@@ -19,21 +22,27 @@ namespace Dobble.Client.Forms
 
 		public override string ToString() => this.UserName;
 
+		/// <summary>
+		/// Accept the invitation
+		/// </summary>
 		public void Accept()
 		{
-			this.gameUIManager.RemoveUser(this);
+			this.gameUIManager.RemoveInvitingUser(this);
 			this.GameInviteResponse.SetResult(true);
 		}
 
+		/// <summary>
+		/// Reject the invitation
+		/// </summary>
 		public void Reject()
 		{
-			this.gameUIManager.RemoveUser(this);
+			this.gameUIManager.RemoveInvitingUser(this);
 			this.GameInviteResponse.SetResult(false);
 		}
 
 		public void Cancel()
 		{
-			this.gameUIManager.RemoveUser(this);
+			this.gameUIManager.RemoveInvitingUser(this);
 			this.GameInviteResponse.SetCanceled();
 		}
 	}

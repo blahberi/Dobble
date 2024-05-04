@@ -6,7 +6,7 @@ namespace Dobble.Server.DataAccess.Interfaces
 {
 	internal interface IUserRepository
 	{
-		Task<List<User>> GetUsersAsync();
+		Task<List<User>> GetAllUsersAsync();
 		Task<User> GetUserAsync(string username);
 		Task AddUserAsync(User user);
 		Task UpdateUserAsync(User user);

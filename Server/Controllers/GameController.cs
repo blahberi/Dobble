@@ -15,6 +15,12 @@ namespace Dobble.Server.Controllers
 		{
 		}
 
+		/// <summary>
+		/// Processes the request and returns the response.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public override async Task<Response> ProcessRequestAsync(Message message, CancellationToken cancellationToken)
 		{
 			switch (message.Method)
@@ -29,7 +35,13 @@ namespace Dobble.Server.Controllers
 					return Response.Error("Method not allowed", HttpStatusCode.MethodNotAllowed);
 			}
 		}
-
+		
+		/// <summary>
+		/// Invite an opponent to a game.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		private async Task<Response> Invite(Message message, CancellationToken cancellationToken)
 		{
 			this.Authorize();
@@ -50,6 +62,11 @@ namespace Dobble.Server.Controllers
 
 		}
 
+		/// <summary>
+		/// Process the selection of the player.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		private async Task<Response> TurnSelection(Message message)
 		{
 			this.Authorize();
@@ -66,6 +83,11 @@ namespace Dobble.Server.Controllers
 			return Response.OK(response);
 		}
 
+		/// <summary>
+		/// Leave the game.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		private async Task<Response> LeaveGame(Message message)
 		{
 			this.Authorize();

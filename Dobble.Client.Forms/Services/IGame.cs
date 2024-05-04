@@ -16,6 +16,6 @@ namespace Dobble.Client.Forms.Services
 
 		Task<Result> RequestGameInvite(string opponentUserName, CancellationToken cancellationToken);
 
-		Task UpdateTurnSelection(int card1, int card2);
+		Task SubmitTurnSelection(int card1, int card2);
 	}
 }

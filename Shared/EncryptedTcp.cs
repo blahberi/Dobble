@@ -12,6 +12,13 @@ namespace Dobble.Shared
 {
 	public static class EncryptedTcp
 	{
+		/// <summary>
+		/// Sets up an encrypted stream for a tcp client.
+		/// </summary>
+		/// <param name="client">tcp client to create the stream from</param>
+		/// <param name="key">aes key</param>
+		/// <param name="iv">aes iv</param>
+		/// <returns></returns>
 		public static Stream SetupEncryptedStream(TcpClient client, byte[] key, byte[] iv)
 		{
 			AesCryptoServiceProvider aesProvider = new AesCryptoServiceProvider

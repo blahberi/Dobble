@@ -37,6 +37,10 @@ namespace Dobble.Server.DataAccess.Models
 		public string City { get; }
 		public string Gender { get; }
 
+		/// <summary>
+		/// Checks if the user information is valid.
+		/// </summary>
+		/// <returns></returns>
 		public bool IsValidInformation()
 		{
 			return InformationValidation.IsValidUsername(this.UserName)

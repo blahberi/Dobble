@@ -10,6 +10,11 @@ namespace Dobble.Server.DataAccess.Repositories
 {
 	internal class UserRepository : RepositoryBase, IUserRepository
 	{
+		/// <summary>
+		/// Add a user to the database.
+		/// </summary>
+		/// <param name="user"></param>
+		/// <returns></returns>
 		public async Task AddUserAsync(User user)
 		{
 			string query = "INSERT INTO Users (UserName, PasswordHash, PasswordSalt, Email, FirstName, LastName, Country, City, Gender) " +
@@ -63,12 +68,22 @@ namespace Dobble.Server.DataAccess.Repositories
 			}
 		}
 
+		/// <summary>
+		/// Delete a user from the data base
+		/// </summary>
+		/// <param name="username"></param>
+		/// <returns></returns>
+		/// <exception cref="System.NotImplementedException"></exception>
 		public Task DeleteUserAsync(string username)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public async Task<List<User>> GetUsersAsync()
+		/// <summary>
+		/// Get all users from the data base
+		/// </summary>
+		/// <returns></returns>
+		public async Task<List<User>> GetAllUsersAsync()
 		{
 			string query = "SELECT UserName, Email, PasswordHash, PasswordSalt FROM Users";
 			List<User> users = new List<User>();
@@ -107,6 +122,11 @@ namespace Dobble.Server.DataAccess.Repositories
 			return users;
 		}
 
+		/// <summary>
+		/// Get a user from the data base
+		/// </summary>
+		/// <param name="userName"></param>
+		/// <returns></returns>
 		public async Task<User> GetUserAsync(string userName)
 		{
 			string query = "SELECT UserName, PasswordHash, PasswordSalt, Email, FirstName, LastName, Country, City, Gender " +

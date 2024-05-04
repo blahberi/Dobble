@@ -311,7 +311,14 @@ namespace Dobble.Server.Services
 					}
 				}
 			}
-			return deck;
+
+			List<List<int>> deckList = deck.ToList();
+			// remove from the deck until half the deck is odd
+			while (deck.Length/2 % 2 == 0)
+			{
+				deckList.RemoveAt(deckList.Count - 1);
+			}
+			return deck.ToArray();
 		}
 	}
 }

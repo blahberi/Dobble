@@ -12,7 +12,6 @@ namespace Dobble.Client.Forms.Services
 		private string userName;
 		private IProtocolSession protocolSession;
 		private Guid gameId;
-
 		public GameService(string userName)
 		{
 			this.userName = userName;
@@ -24,11 +23,21 @@ namespace Dobble.Client.Forms.Services
 		public event EventHandler<GameOverEventArgs> OnGameOver;
 		public event EventHandler<GameStartedEventArgs> OnGameStarted;
 
+		/// <summary>
+		/// Set the user name.
+		/// </summary>
+		/// <param name="userName"></param>
 		public void SetUserName(string userName)
 		{
 			this.userName = userName;
 		}
 
+		/// <summary>
+		/// Invite an opponent to a game.
+		/// </summary>
+		/// <param name="opponentUserName"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public async Task<Result> RequestGameInvite(string opponentUserName, CancellationToken cancellationToken)
 		{
 			GameInviteServerResponse response = await this.protocolSession.RequestManager.SendServerGameInvite(opponentUserName, cancellationToken);
@@ -36,11 +45,23 @@ namespace Dobble.Client.Forms.Services
 			return response.GameId != Guid.Empty ? Result.SuccessResult() : Result.FailureResult(response.ErrorMessage);
 		}
 
-		public Task UpdateTurnSelection(int card1, int card2)
+		/// <summary>
+		/// Submits the selected symbols by the user to be sent to the server.
+		/// </summary>
+		/// <param name="card1"></param>
+		/// <param name="card2"></param>
+		/// <returns></returns>
+		public Task SubmitTurnSelection(int card1, int card2)
 		{
 			return this.protocolSession.RequestManager.SendGameTurnSelection(this.gameId, new int[] { card1, card2 });
 		}
 
+		/// <summary>
+		/// Receive a game invite from an opponent.
+		/// </summary>
+		/// <param name="opponentUserName"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public Task<bool> GameInviteRequested(string opponentUserName, CancellationToken cancellationToken)
 		{
 			GameInviteEventArgs eventArgs = new GameInviteEventArgs(opponentUserName, cancellationToken);
@@ -48,6 +69,17 @@ namespace Dobble.Client.Forms.Services
 			return eventArgs.GameInviteResponse.Task;
 		}
 
+		/// <summary>
+		/// Receive the next turn from the server.
+		/// </summary>
+		/// <param name="gameId"></param>
+		/// <param name="player1Name"></param>
+		/// <param name="player1Score"></param>
+		/// <param name="player2Name"></param>
+		/// <param name="player2Score"></param>
+		/// <param name="cards"></param>
+		/// <param name="previousTurnWinner"></param>
+		/// <param name="previousTurnIndices"></param>
 		public void GameNextTurn(
 			Guid gameId,
 			string player1Name,
@@ -76,6 +108,17 @@ namespace Dobble.Client.Forms.Services
 			}
 		}
 
+		/// <summary>
+		/// Receive the game summary from the server when the game is over.
+		/// </summary>
+		/// <param name="gameId"></param>
+		/// <param name="winner"></param>
+		/// <param name="player1Name"></param>
+		/// <param name="player1Score"></param>
+		/// <param name="player2Name"></param>
+		/// <param name="player2Score"></param>
+		/// <param name="previousTurnWinner"></param>
+		/// <param name="previousTurnIndices"></param>
 		public void GameOver(
 			Guid gameId,
 			string winner,
@@ -98,6 +141,9 @@ namespace Dobble.Client.Forms.Services
 			this.protocolSession = protocolSession;
 		}
 
+		/// <summary>
+		/// Leave the game.
+		/// </summary>
 		public void LeaveGame()
 		{
 			this.protocolSession.RequestManager.SendLeaveGame(this.gameId);

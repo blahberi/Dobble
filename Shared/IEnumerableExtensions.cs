@@ -26,8 +26,8 @@ namespace Dobble.Shared
 		/// Shuffles the elements of a collection using a specified random number generator.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="source"></param>
-		/// <param name="rng"></param>
+		/// <param name="source">The collection to be shuffled</param>
+		/// <param name="rng">Random number generator</param>
 		/// <returns></returns>
 		public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source, Random rng)
 		{
@@ -38,8 +38,8 @@ namespace Dobble.Shared
 		/// Performs an action on each element of a collection.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="source"></param>
-		/// <param name="action"></param>
+		/// <param name="source">The collection to be processed</param>
+		/// <param name="action">The action to perform on each element</param>
 		/// <returns></returns>
 		public static IEnumerable<T> ForEach<T>(this IEnumerable<T> source, Action<T> action)
 		{

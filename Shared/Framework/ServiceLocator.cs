@@ -14,7 +14,7 @@ namespace Dobble.Shared.Framework
 		/// Registers a service with the service locator
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="instance"></param>
+		/// <param name="instance">Servive to be registered</param>
 		public void RegisterService<T>(T instance) where T : class
 		{
 			this.services[typeof(T)] = instance;
@@ -24,7 +24,7 @@ namespace Dobble.Shared.Framework
 		/// Gets a service from the service locator
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="instance"></param>
+		/// <param name="instance">Service to be found</param>
 		public void GetService<T>(out T instance)
 		{
 			instance = (T)this.services[typeof(T)];

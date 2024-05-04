@@ -14,6 +14,12 @@ namespace Dobble.Client.Forms.Controllers
 		{
 		}
 
+		/// <summary>
+		/// Processes the request and returns the response.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		public async override Task<Response> ProcessRequestAsync(Message message, CancellationToken cancellationToken)
 		{
 			switch (message.Method)
@@ -29,6 +35,12 @@ namespace Dobble.Client.Forms.Controllers
 			}
 		}
 
+		/// <summary>
+		/// Receive an invite from an opponent.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
 		private async Task<Response> Invite(Message message, CancellationToken cancellationToken)
 		{
 			GameInvite invite = this.GetRequestBody<GameInvite>(message);
@@ -38,6 +50,11 @@ namespace Dobble.Client.Forms.Controllers
 			return Response.OK(new GameInviteUserResponse { Accepted = accepted });
 		}
 
+		/// <summary>
+		/// Receive the next turn from the server.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		private Task<Response> NextTurn(Message message)
 		{
 			GameNextTurn nextTurn = this.GetRequestBody<GameNextTurn>(message);
@@ -55,6 +72,11 @@ namespace Dobble.Client.Forms.Controllers
 			return Response.OK().AsTask();
 		}
 
+		/// <summary>
+		/// Process the end of the game.
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		private Task<Response> GameOver(Message message)
 		{
 			GameOver gameOver = this.GetRequestBody<GameOver>(message);
