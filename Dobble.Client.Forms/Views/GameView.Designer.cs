@@ -31,8 +31,8 @@
             this.components = new System.ComponentModel.Container();
             this.WrongTimer = new System.Windows.Forms.Timer(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.Card1 = new Dobble.Client.Forms.UserControls.Card();
             this.Card2 = new Dobble.Client.Forms.UserControls.Card();
+            this.Card1 = new Dobble.Client.Forms.UserControls.Card();
             this.NewRoundTimer = new System.Windows.Forms.Timer(this.components);
             this.LastRoundTimer = new System.Windows.Forms.Timer(this.components);
             this.YourUserNameLabel = new Dobble.Client.Forms.GruvboxLabel();
@@ -55,23 +55,13 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.Card1);
             this.panel1.Controls.Add(this.Card2);
+            this.panel1.Controls.Add(this.Card1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 107);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(700, 300);
             this.panel1.TabIndex = 2;
-            // 
-            // Card1
-            // 
-            this.Card1.BackColor = System.Drawing.Color.Transparent;
-            this.Card1.Disabled = false;
-            this.Card1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.Card1.Location = new System.Drawing.Point(0, 0);
-            this.Card1.Name = "Card1";
-            this.Card1.Size = new System.Drawing.Size(300, 300);
-            this.Card1.TabIndex = 0;
             // 
             // Card2
             // 
@@ -82,6 +72,16 @@
             this.Card2.Name = "Card2";
             this.Card2.Size = new System.Drawing.Size(300, 300);
             this.Card2.TabIndex = 1;
+            // 
+            // Card1
+            // 
+            this.Card1.BackColor = System.Drawing.Color.Transparent;
+            this.Card1.Disabled = false;
+            this.Card1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.Card1.Location = new System.Drawing.Point(0, 0);
+            this.Card1.Name = "Card1";
+            this.Card1.Size = new System.Drawing.Size(300, 300);
+            this.Card1.TabIndex = 0;
             // 
             // NewRoundTimer
             // 
@@ -210,7 +210,6 @@
 		#endregion
 
 		private UserControls.Card Card1;
-		private UserControls.Card Card2;
 		private System.Windows.Forms.Timer WrongTimer;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Timer NewRoundTimer;
@@ -223,5 +222,6 @@
 		private GruvboxLabel OpponentNameLabel;
 		private GruvboxLabel OpponentScoreLabel;
 		private GruvboxLabel RoundSummaryLabel;
+		private UserControls.Card Card2;
 	}
 }

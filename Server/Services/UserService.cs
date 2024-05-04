@@ -39,6 +39,10 @@ namespace Dobble.Server.Services
 		{
 			try
 			{
+				if (await this.UserExists(userRegistration.Username))
+				{
+					return Result.FailureResult("Username already exists");
+				}
 				(string passwordHash, string salt) = HashPassword(userRegistration.Password);
 
 				User user = new User(
@@ -78,14 +82,14 @@ namespace Dobble.Server.Services
 			User user = await this.dataAccess.UserRepository.GetUserAsync(userSignin.Username);
 			if (user == null)
 			{
-				return Result<User>.FailureResult("Could not find user in the database");
+				return Result<User>.FailureResult("Invalid Username or Password");
 			}
 
 			string computedHash = ComputeHash(userSignin.Password, user.PasswordSalt);
 
 			if (computedHash != user.PasswordHash)
 			{
-				return Result<User>.FailureResult("Passwords don't match");
+				return Result<User>.FailureResult("Invalid Username or Password");
 			}
 
 			lock (this.signedInUsers)
@@ -93,7 +97,7 @@ namespace Dobble.Server.Services
 				// Check if the user is already signed in
 				if (this.signedInUsers.TryGetValue(userSignin.Username, out ServerConnectionContext signedInUser))
 				{
-					user = signedInUser.User;
+					return Result<User>.FailureResult("User is already signed in");
 				}
 				else
 				{
@@ -104,6 +108,22 @@ namespace Dobble.Server.Services
 			}
 
 			return Result<User>.SuccessResult(user);
+		}
+
+		/// <summary>
+		/// Checks if a username already exists in the database.
+		/// </summary>
+		/// <param name="username"></param>
+		/// <returns></returns>
+		private async Task<bool> UserExists(string username)
+		{
+			User user = await this.dataAccess.UserRepository.GetUserAsync(username);
+			if (user == null)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>

@@ -37,6 +37,7 @@
             this.BackColor = System.Drawing.Color.Transparent;
             this.Name = "Card";
             this.Size = new System.Drawing.Size(300, 300);
+            this.Load += new System.EventHandler(this.Card_Load);
             this.ResumeLayout(false);
 
 		}

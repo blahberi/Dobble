@@ -52,7 +52,11 @@ namespace Dobble.Server.Controllers
 
 			if (!result.Success)
 			{
-				return Response.Error("Could not sign in user.", HttpStatusCode.Unauthorized);
+				if (result.ErrorMessage == "User is already signed in")
+				{
+					return Response.Error(result.ErrorMessage, HttpStatusCode.Conflict);
+				}
+				return Response.Error(result.ErrorMessage, HttpStatusCode.Unauthorized);
 			}
 
 			return Response.OK($"User {userSignin.Username} signed in");

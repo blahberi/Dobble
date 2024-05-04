@@ -22,7 +22,8 @@ namespace Dobble.Shared.Framework
 
 				case HttpStatusCode.Unauthorized:
 					return new UnauthorizedAccessException(errorMessage ?? "Unauthorized access");
-
+				case HttpStatusCode.Conflict:
+					return new InvalidOperationException(errorMessage ?? "Conflict");
 				case HttpStatusCode.Forbidden:
 					return new UnauthorizedAccessException(errorMessage ?? "Forbidden access");
 

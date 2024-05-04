@@ -321,23 +321,23 @@
 
 		#endregion
 		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.TextBox PasswordText;
-		private System.Windows.Forms.Label PasswordLabel;
-		private System.Windows.Forms.TextBox UserNameText;
-		private System.Windows.Forms.Label UserNameLabel;
-		private System.Windows.Forms.TextBox EmailText;
-		private System.Windows.Forms.Label EmailLabel;
-		private System.Windows.Forms.Button RegisterButton;
-		private System.Windows.Forms.Label GenderLabel;
-		private System.Windows.Forms.TextBox CityText;
-		private System.Windows.Forms.Label CityLabel;
-		private System.Windows.Forms.TextBox CountryText;
-		private System.Windows.Forms.Label CountryLabel;
-		private System.Windows.Forms.TextBox LastNameText;
-		private System.Windows.Forms.Label LastNameLabel;
-		private System.Windows.Forms.TextBox FirstNameText;
-		private System.Windows.Forms.Label FirstNameLabel;
-		private System.Windows.Forms.LinkLabel LoginLink;
-		private System.Windows.Forms.ComboBox GenderCombo;
+		private GruvboxTextBox PasswordText;
+		private GruvboxLabel PasswordLabel;
+		private GruvboxTextBox UserNameText;
+		private GruvboxLabel UserNameLabel;
+		private GruvboxTextBox EmailText;
+		private GruvboxLabel EmailLabel;
+		private GruvboxButton RegisterButton;
+		private GruvboxLabel GenderLabel;
+		private GruvboxTextBox CityText;
+		private GruvboxLabel CityLabel;
+		private GruvboxTextBox CountryText;
+		private GruvboxLabel CountryLabel;
+		private GruvboxTextBox LastNameText;
+		private GruvboxLabel LastNameLabel;
+		private GruvboxTextBox FirstNameText;
+		private GruvboxLabel FirstNameLabel;
+		private GruvboxLink LoginLink;
+		private GruvboxComboBox GenderCombo;
 	}
 }

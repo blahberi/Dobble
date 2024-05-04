@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -105,6 +106,11 @@ namespace Dobble.Client.Forms
 			catch (UnauthorizedAccessException)
 			{
 				MessageBox.Show("Invalid username or password.");
+				return false;
+			}
+			catch (InvalidOperationException)
+			{
+				MessageBox.Show("User is already signed in.");
 				return false;
 			}
 			catch (Exception ex)
@@ -252,6 +258,7 @@ namespace Dobble.Client.Forms
 		{
 			this.UserName = null;
 			this.gameService.SetUserName(null);
+			this.ActiveControl = new LoginView(this);
 		}
 
 		private bool ValidateInformation(

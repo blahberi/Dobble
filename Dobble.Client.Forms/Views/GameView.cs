@@ -26,8 +26,6 @@ namespace Dobble.Client.Forms.Views
 
 			this.Card1.OnSymbolSelected += this.Card_OnSymbolSelected;
 			this.Card2.OnSymbolSelected += this.Card_OnSymbolSelected;
-			this.Card1.PaintCard();
-			this.Card2.PaintCard();
 			this.Card1.LoadSymbols(this.cards[0]);
 			this.Card2.LoadSymbols(this.cards[1]);
 		}

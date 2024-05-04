@@ -17,9 +17,7 @@ namespace Dobble.Client.Forms.UserControls
 			this.symbolCount = GameConfig.ORDER + 1;
 			this.symbols = new Symbol[this.symbolCount];
 			this.CreatePictureBoxes();
-
 			this.Selected = -1;
-
 			this.CardBackColor = GruvboxTheme.CreamText;
 		}
 
@@ -29,11 +27,6 @@ namespace Dobble.Client.Forms.UserControls
 
 		public int Selected { get; private set; }
 		public bool Disabled { get; set; }
-
-		public void PaintCard()
-		{
-			this.Parent.Paint += this.Card_Paint;
-		}
 
 		public void LoadSymbols(int[] symbols)
 		{
@@ -134,7 +127,7 @@ namespace Dobble.Client.Forms.UserControls
 			symbol.TabStop = false;
 			this.Controls.Add(symbol);
 
-			symbol.InitSelectionDrawer();
+			symbol.CreateBackgrounds();
 			return symbol;
 		}
 
@@ -148,7 +141,7 @@ namespace Dobble.Client.Forms.UserControls
 			centerSymbol.TabStop = false;
 			this.Controls.Add(centerSymbol);
 
-			centerSymbol.InitSelectionDrawer();
+			centerSymbol.CreateBackgrounds();
 			return centerSymbol;
 		}
 
@@ -183,50 +176,86 @@ namespace Dobble.Client.Forms.UserControls
 			this.OnSymbolSelected?.Invoke();
 		}
 
-		private void Card_Paint(object sender, PaintEventArgs e)
+		private void Card_Load(object sender, EventArgs e)
 		{
-			using (SolidBrush brush = new SolidBrush(this.CardBackColor))
+			Bitmap bmp = new Bitmap(this.Width, this.Height);
+			using (Graphics graphics = Graphics.FromImage(bmp))
 			{
-				// Calculate the circle dimensions to be slightly larger than the PictureBox
-				int diameter = Math.Max(this.Width, this.Height);
-				int x = this.Location.X;
-				int y = this.Location.Y;
+				using (SolidBrush brush = new SolidBrush(this.CardBackColor))
+				{
+					// Calculate the circle dimensions to be slightly larger than the PictureBox
+					int diameter = Math.Max(this.Width, this.Height);
+					int x = 0;
+					int y = 0;
 
-				// Draw the filled ellipse on the parent control
-				e.Graphics.FillEllipse(brush, new Rectangle(x, y, diameter, diameter));
+					// Draw the filled ellipse on the parent control
+					graphics.FillEllipse(brush, new Rectangle(x, y, diameter, diameter));
+				}
 			}
+			this.BackgroundImage = bmp;
 		}
 	}
 
 	internal class Symbol : PictureBox
 	{
-		private Color backgroundCircleColor;
+		private Bitmap emptyBackgroundImage;
+		private Bitmap selectedBackgroundImage;
+		private Bitmap wrongBackgroundImage;
+		private Bitmap correctBackgroundImage;
 
 		public Symbol()
 		{
 			this.BackColor = Color.Transparent;
 			this.SizeMode = PictureBoxSizeMode.StretchImage;
 			this.TabStop = false;
-
-			this.backgroundCircleColor = Color.Transparent;
 		}
 
-		public void InitSelectionDrawer()
+		public void CreateBackgrounds()
 		{
-			this.Parent.Paint += (sender, e) =>
-			{
-				using (SolidBrush brush = new SolidBrush(this.backgroundCircleColor))
-				{
-					// Calculate the circle dimensions to be slightly larger than the PictureBox
-					int padding = 10;  // You can adjust the padding size
-					int diameter = Math.Max(this.Width, this.Height) + padding;
-					int x = this.Location.X - (padding / 2);
-					int y = this.Location.Y - (padding / 2);
+			// create empty background image
+			this.emptyBackgroundImage = new Bitmap(this.Width, this.Height);
 
-					// Draw the filled ellipse on the parent control
-					e.Graphics.FillEllipse(brush, new Rectangle(x, y, diameter, diameter));
+			// create selected background image
+			this.selectedBackgroundImage = new Bitmap(this.Width, this.Height);
+			using (Graphics graphics = Graphics.FromImage(this.selectedBackgroundImage))
+			{
+				using (SolidBrush brush = new SolidBrush(GruvboxTheme.Yellow))
+				{
+					// Calculate the circle dimensions to fit within the PictureBox
+					int diameter = Math.Min(this.Width, this.Height);
+
+					// Draw the filled ellipse centered within the control
+					graphics.FillEllipse(brush, 0, 0, diameter, diameter);
 				}
-			};
+			}
+
+			// create wrong background image
+			this.wrongBackgroundImage = new Bitmap(this.Width, this.Height);
+			using (Graphics graphics = Graphics.FromImage(this.wrongBackgroundImage))
+			{
+				using (SolidBrush brush = new SolidBrush(GruvboxTheme.Red))
+				{
+					// Calculate the circle dimensions to fit within the PictureBox
+					int diameter = Math.Min(this.Width, this.Height);
+
+					// Draw the filled ellipse centered within the control
+					graphics.FillEllipse(brush, 0, 0, diameter, diameter);
+				}
+			}
+
+			// create correct background image
+			this.correctBackgroundImage = new Bitmap(this.Width, this.Height);
+			using (Graphics graphics = Graphics.FromImage(this.correctBackgroundImage))
+			{
+				using (SolidBrush brush = new SolidBrush(GruvboxTheme.DarkGreen))
+				{
+					// Calculate the circle dimensions to fit within the PictureBox
+					int diameter = Math.Min(this.Width, this.Height);
+
+					// Draw the filled ellipse centered within the control
+					graphics.FillEllipse(brush, 0, 0, diameter, diameter);
+				}
+			}
 		}
 
 		public void LoadSymbol(int symbolId)
@@ -237,30 +266,22 @@ namespace Dobble.Client.Forms.UserControls
 
 		public void ResetCircleBackColor()
 		{
-			this.backgroundCircleColor = Color.Transparent;
-			if (this.Parent == null) { return; };
-			this.Parent.Refresh();
+			this.BackgroundImage = this.emptyBackgroundImage;
 		}
 
 		public void SelectSymbol()
 		{
-			this.backgroundCircleColor = GruvboxTheme.SecondaryColor;
-			if (this.Parent == null) { return; };
-			this.Parent.Refresh();
+			this.BackgroundImage = this.selectedBackgroundImage;
 		}
 
 		public void MarkSymbolAsWrong()
 		{
-			this.backgroundCircleColor = GruvboxTheme.Red;
-			if (this.Parent == null) { return; };
-			this.Parent.Refresh();
+			this.BackgroundImage = this.wrongBackgroundImage;
 		}
 
 		public void MarkSymbolAsCorrect()
 		{
-			this.backgroundCircleColor = GruvboxTheme.DarkGreen;
-			if (this.Parent == null) { return; };
-			this.Parent.Refresh();
+			this.BackgroundImage = this.correctBackgroundImage;
 		}
 	}
 }
