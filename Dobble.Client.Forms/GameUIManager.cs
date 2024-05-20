@@ -91,10 +91,10 @@ namespace Dobble.Client.Forms
 		/// </summary>
 		/// <param name="client"></param>
 		/// <param name="communicationStream"></param>
-		public void ClientConnected(TcpClient client, Stream communicationStream)
+		public void ClientConnected(ISessionStream sessionStream)
 		{
 			this.ActiveControl = new LoginView(this);
-			this.session = this.protocolManager.CreateSession(client, communicationStream);
+			this.session = this.protocolManager.CreateSession(sessionStream);
 			this.gameService.SessionStarted(this.session);
 		}
 

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -22,9 +20,8 @@ namespace Dobble.Shared.Framework
 	internal class ProtocolSession<TConnectionContext> : IProtocolSession, IRequestManager where TConnectionContext : ConnectionContext, new()
 	{
 		private readonly IControllerFactory<TConnectionContext> controllerFactory;
-		private readonly TcpClient tcpClient;
 		private readonly TConnectionContext connectionContext;
-		private readonly Stream stream;
+		private readonly ISessionStream stream;
 		private readonly StreamWriter writer;
 		private readonly StreamReader reader;
 		private readonly JavaScriptSerializer serializer;
@@ -42,18 +39,17 @@ namespace Dobble.Shared.Framework
 		public ProtocolSession(
 			IControllerFactory<TConnectionContext> controllerFactory, 
 			IServiceLocator serviceLocator, 
-			TcpClient tcpClient, 
-			Stream communicationStream)
+			ISessionStream sessionStream)
 		{
 			this.connectionContext = new TConnectionContext();
 			this.connectionContext.RequestManager = this;
 			this.connectionContext.ServiceLocator = serviceLocator;
 
 			this.controllerFactory = controllerFactory;
-			this.tcpClient = tcpClient;
-			this.stream = communicationStream;
-			this.reader = new StreamReader(this.stream);
-			this.writer = new StreamWriter(this.stream) { AutoFlush = true };
+			this.stream = sessionStream;
+			this.reader = this.stream.Reader;
+			this.writer = this.stream.Writer;
+			this.writer.AutoFlush = true;
 
 			this.serializer = new JavaScriptSerializer();
 
@@ -73,10 +69,8 @@ namespace Dobble.Shared.Framework
 		public void Dispose()
 		{
 			this.CancelAllPendingRequests();
-			this.writer.Dispose();
-			this.reader.Dispose();
 			this.stream.Dispose();
-			this.tcpClient.Dispose();
+			this.connectionContext.Dispose();
 		}
 
 		/// <summary>
@@ -173,9 +167,7 @@ namespace Dobble.Shared.Framework
 			finally
 			{
 				Console.WriteLine("Closing connection.");
-				this.CancelAllPendingRequests();
-				this.tcpClient.Close();
-				this.connectionContext.Dispose();
+				this.Dispose();
 			}
 		}
 

@@ -14,6 +14,6 @@ namespace Dobble.Shared.Framework
 		/// </summary>
 		/// <param name="tcpClient"></param>
 		/// <returns></returns>
-		IProtocolSession CreateSession(TcpClient tcpClient, Stream communicationStream);
+		IProtocolSession CreateSession(ISessionStream sessionStream);
 	}
 }

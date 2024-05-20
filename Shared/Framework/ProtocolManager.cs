@@ -28,9 +28,9 @@ namespace Dobble.Shared.Framework
 		/// </summary>
 		/// <param name="tcpClient"></param>
 		/// <returns></returns>
-		public IProtocolSession CreateSession(TcpClient tcpClient, Stream communicationStream)
+		public IProtocolSession CreateSession(ISessionStream sessionStream)
 		{
-			ProtocolSession<TConnectionContext> protocolSession = new ProtocolSession<TConnectionContext>(this.controllerFactory, this.serviceLocator, tcpClient, communicationStream);
+			ProtocolSession<TConnectionContext> protocolSession = new ProtocolSession<TConnectionContext>(this.controllerFactory, this.serviceLocator, sessionStream);
 
 			protocolSession.StartMessageLoop();
 

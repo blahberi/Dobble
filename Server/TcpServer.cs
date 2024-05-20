@@ -5,8 +5,6 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Dobble.Shared.Framework;
-using Dobble.Shared;
-using System.Text;
 
 namespace Dobble.Server
 {
@@ -70,10 +68,10 @@ namespace Dobble.Server
 			byte[] aesIV = Convert.FromBase64String(ivString);
 
 
-			Stream encryptedStream = EncryptedTcp.SetupEncryptedStream(client, aesKey, aesIV);
+			AesSessionStream encryptedStream = new AesSessionStream(client, aesKey, aesIV);
 
 			// Use encryptedClient in your session
-			using (IProtocolSession session = this.protocolManager.CreateSession(client, encryptedStream))
+			using (IProtocolSession session = this.protocolManager.CreateSession(encryptedStream))
 			{
 				await session.WaitForSessionToEnd();
 			}

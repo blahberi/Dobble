@@ -2,10 +2,10 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Dobble.Shared;
+using Dobble.Shared.Framework;
 
 namespace Dobble.Client.Forms
 {
@@ -14,7 +14,7 @@ namespace Dobble.Client.Forms
 		private readonly GameUIManager gameUIManager;
 		bool connecting = false;
 		TcpClient client;
-		Stream encryptedStream;
+		ISessionStream encryptedStream;
 
 		public ConnectView(GameUIManager gameUIManager)
 		{
@@ -52,7 +52,7 @@ namespace Dobble.Client.Forms
 
 					await this.InitiateEncryptionAsync();
 
-					this.gameUIManager.ClientConnected(this.client, this.encryptedStream);
+					this.gameUIManager.ClientConnected(this.encryptedStream);
 				}
 				catch (Exception)
 				{
@@ -93,7 +93,7 @@ namespace Dobble.Client.Forms
 			await writer.WriteLineAsync(encryptedKeyString);
 			await writer.WriteLineAsync(Convert.ToBase64String(aes.IV));
 
-			this.encryptedStream = EncryptedTcp.SetupEncryptedStream(this.client, aes.Key, aes.IV);
+			this.encryptedStream = new AesSessionStream(this.client, aes.Key, aes.IV);
 		}
 	}
 }
