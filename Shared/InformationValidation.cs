@@ -13,7 +13,7 @@ namespace Dobble.Shared
 	public static class InformationValidation
 	{
 		public static Regex usernameRegex = new Regex(@"^[a-zA-Z0-9_]{3,20}$");
-		public static Regex passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$");
+		public static Regex passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,64}$");
 		public static Regex emailRegex = new Regex(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
 		public static Regex nameRegex = new Regex(@"^[a-zA-Z]{2,20}$");
 		public static Regex placeRegex = new Regex(@"^[a-zA-Z ]{2,20}$");

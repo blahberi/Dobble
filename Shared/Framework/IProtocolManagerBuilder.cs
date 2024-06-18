@@ -6,7 +6,7 @@
 	/// <typeparam name="TConnectionContext"></typeparam>
 	/// <param name="connectionContext"></param>
 	/// <returns></returns>
-	public delegate IController CreateController<TConnectionContext>(TConnectionContext connectionContext)
+	public delegate IController GenerateController<TConnectionContext>(TConnectionContext connectionContext)
 		where TConnectionContext : ConnectionContext;
 
 	/// <summary>
@@ -22,7 +22,7 @@
 		/// <param name="path"></param>
 		/// <param name="createController"></param>
 		/// <returns></returns>
-		IProtocolManagerBuilder<TConnectionContext> RegisterController(string path, CreateController<TConnectionContext> createController);
+		IProtocolManagerBuilder<TConnectionContext> RegisterController(string path, GenerateController<TConnectionContext> createController);
 
 		/// <summary>
 		/// Register a service with the service locator.

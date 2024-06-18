@@ -73,11 +73,6 @@
     <Compile Include="DataAccess\IDataAccess.cs" />
     <Compile Include="DataAccess\Interfaces\IUserRepository.cs" />
     <Compile Include="DataAccess\Repositories\UserRepository.cs" />
-    <Compile Include="DobbleDataSet.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DobbleDataSet.xsd</DependentUpon>
-    </Compile>
     <Compile Include="ServerConnectionContext.cs" />
     <Compile Include="Services\Game.cs" />
     <Compile Include="Services\GameService.cs" />
@@ -96,17 +91,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="DobbleDataSet.xsc">
-      <DependentUpon>DobbleDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="DobbleDataSet.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>DobbleDataSet.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="DobbleDataSet.xss">
-      <DependentUpon>DobbleDataSet.xsd</DependentUpon>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

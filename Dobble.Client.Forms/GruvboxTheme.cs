@@ -27,8 +27,6 @@ namespace Dobble.Client.Forms
 		public static Color DarkAqua { get; } = ColorFromHex("689d6a");
 		public static Color Yellow { get; } = ColorFromHex("fabd2f");
 		public static Color DarkYellow { get; } = ColorFromHex("d79921");
-
-
 		public static Color Background { get; } = ColorFromHex("282828");
 		public static Color DarkBackground { get; } = ColorFromHex("1d2021");
 		public static Color WhiteText { get; } = ColorFromHex("fbf1c7");

@@ -12,14 +12,14 @@ namespace Dobble.Shared.Framework
 		/// <summary>
 		/// This dictionary holds a controller creator for each path
 		/// </summary>
-		private readonly Dictionary<string, CreateController<TConnectionContext>> controllerFactories;
+		private readonly Dictionary<string, GenerateController<TConnectionContext>> controllerGenerators;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		public ControllerFactory()
 		{
-			this.controllerFactories = new Dictionary<string, CreateController<TConnectionContext>>();
+			this.controllerGenerators = new Dictionary<string, GenerateController<TConnectionContext>>();
 		}
 
 		/// <summary>
@@ -28,9 +28,9 @@ namespace Dobble.Shared.Framework
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="createController"></param>
-		public void RegisterController(string path, CreateController<TConnectionContext> createController)
+		public void RegisterController(string path, GenerateController<TConnectionContext> createController)
 		{
-			this.controllerFactories[path] = createController;
+			this.controllerGenerators[path] = createController;
 		}
 
 		/// <summary>
@@ -42,10 +42,10 @@ namespace Dobble.Shared.Framework
 		public IController CreateController(TConnectionContext connectionContext, string path)
 		{
 			// Look for a controller factory for the given path
-			if (this.controllerFactories.TryGetValue(path, out CreateController<TConnectionContext> createController))
+			if (this.controllerGenerators.TryGetValue(path, out GenerateController<TConnectionContext> generateController))
 			{
-				// Create the controller
-				return createController(connectionContext);
+				// Create the controller and return it
+				return generateController(connectionContext);
 			}
 
 			return new UnknownRouteController();

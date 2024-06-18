@@ -14,7 +14,7 @@ namespace Dobble.Client.Forms
 		private readonly GameUIManager gameUIManager;
 		bool connecting = false;
 		TcpClient client;
-		ISessionStream encryptedStream;
+		ISessionComm encryptedStream;
 
 		public ConnectView(GameUIManager gameUIManager)
 		{
@@ -93,7 +93,7 @@ namespace Dobble.Client.Forms
 			await writer.WriteLineAsync(encryptedKeyString);
 			await writer.WriteLineAsync(Convert.ToBase64String(aes.IV));
 
-			this.encryptedStream = new AesSessionStream(this.client, aes.Key, aes.IV);
+			this.encryptedStream = new EncryptedTcpComm(this.client, aes.Key, aes.IV);
 		}
 	}
 }

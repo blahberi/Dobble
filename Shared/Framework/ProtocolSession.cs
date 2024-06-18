@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
@@ -21,12 +20,10 @@ namespace Dobble.Shared.Framework
 	{
 		private readonly IControllerFactory<TConnectionContext> controllerFactory;
 		private readonly TConnectionContext connectionContext;
-		private readonly ISessionStream stream;
-		private readonly StreamWriter writer;
-		private readonly StreamReader reader;
+		private readonly ISessionComm sessionComm;
 		private readonly JavaScriptSerializer serializer;
-		private readonly Dictionary<Guid, TaskCompletionSource<string>> pendingClientRequests; // Used to store requests that are waiting for a response
-		private readonly Dictionary<Guid, CancellationTokenSource> pendingHandledRequests; // Used to cancel requests that are being handled
+		private readonly Dictionary<Guid, TaskCompletionSource<string>> pendingRequests; // Used to store requests that are waiting for a response
+		private readonly Dictionary<Guid, CancellationTokenSource> pendingCancellableRequests; // Used to cancel requests that are being handled
 		private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);  // Binary semaphore for synchronizing writes to the stream
 		private Task messageLoop;
 
@@ -39,22 +36,19 @@ namespace Dobble.Shared.Framework
 		public ProtocolSession(
 			IControllerFactory<TConnectionContext> controllerFactory, 
 			IServiceLocator serviceLocator, 
-			ISessionStream sessionStream)
+			ISessionComm sessionComm)
 		{
 			this.connectionContext = new TConnectionContext();
 			this.connectionContext.RequestManager = this;
 			this.connectionContext.ServiceLocator = serviceLocator;
 
 			this.controllerFactory = controllerFactory;
-			this.stream = sessionStream;
-			this.reader = this.stream.Reader;
-			this.writer = this.stream.Writer;
-			this.writer.AutoFlush = true;
+			this.sessionComm = sessionComm;
 
 			this.serializer = new JavaScriptSerializer();
 
-			this.pendingClientRequests = new Dictionary<Guid, TaskCompletionSource<string>>();
-			this.pendingHandledRequests = new Dictionary<Guid, CancellationTokenSource>();
+			this.pendingRequests = new Dictionary<Guid, TaskCompletionSource<string>>();
+			this.pendingCancellableRequests = new Dictionary<Guid, CancellationTokenSource>();
 		}
 
 		/// <summary>
@@ -69,7 +63,7 @@ namespace Dobble.Shared.Framework
 		public void Dispose()
 		{
 			this.CancelAllPendingRequests();
-			this.stream.Dispose();
+			this.sessionComm.Dispose();
 			this.connectionContext.Dispose();
 		}
 
@@ -107,9 +101,9 @@ namespace Dobble.Shared.Framework
 			Guid messageId = Guid.NewGuid();
 
 			TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
-			lock (this.pendingClientRequests)
+			lock (this.pendingRequests)
 			{
-				this.pendingClientRequests.Add(messageId, tcs);
+				this.pendingRequests.Add(messageId, tcs);
 			}
 
 			string body = requestBody != null ? this.serializer.Serialize(requestBody) : string.Empty;
@@ -137,12 +131,13 @@ namespace Dobble.Shared.Framework
 			{
 				while (true) // Keep reading as long as the connection is open
 				{
-					string jsonRequest = await this.reader.ReadLineAsync();
-					if (string.IsNullOrEmpty(jsonRequest))
+					byte[] jsonRequestBytes = await this.sessionComm.ReadMessageAsync(); // Read message from the other side.
+					if (jsonRequestBytes.Length == 0)
 					{
-						break; // If the client closes connection, exit loop
+						break; // If the other side closes connection, exit loop
 					}
 
+					string jsonRequest = System.Text.Encoding.UTF8.GetString(jsonRequestBytes); // Convert the bytes to a string
 					Message request = this.serializer.Deserialize<Message>(jsonRequest);
 					Console.WriteLine($"Received: Id:{request.MessageId} Method={request.Method}, Path={request.Path}, Body={request.Body}");
 
@@ -177,8 +172,8 @@ namespace Dobble.Shared.Framework
 		/// </summary>
 		private void CancelAllPendingRequests()
 		{
-			this.pendingClientRequests.Values.ForEach(tcs => tcs.SetException(new ObjectDisposedException("Disconnected")));
-			this.pendingClientRequests.Clear();
+			this.pendingRequests.Values.ForEach(tcs => tcs.SetException(new ObjectDisposedException("Disconnected")));
+			this.pendingRequests.Clear();
 		}
 
 		/// <summary>
@@ -189,14 +184,14 @@ namespace Dobble.Shared.Framework
 		private void HandleRequestReponse(Message response)
 		{
 			TaskCompletionSource<string> tcs;
-			lock (this.pendingClientRequests)
+			lock (this.pendingRequests)
 			{
 				// Find request inside pending requests
-				if (!this.pendingClientRequests.TryGetValue(response.MessageId, out tcs))
+				if (!this.pendingRequests.TryGetValue(response.MessageId, out tcs))
 				{
 					return;
 				}
-				this.pendingClientRequests.Remove(response.MessageId);
+				this.pendingRequests.Remove(response.MessageId);
 			}
 
 			if (response.Method == Methods.Response.Success)
@@ -219,9 +214,9 @@ namespace Dobble.Shared.Framework
 		private void HandleRequestCancellation(Message request)
 		{
 			CancellationTokenSource cancellationTokenSource;
-			lock (this.pendingHandledRequests)
+			lock (this.pendingCancellableRequests)
 			{
-				if (!this.pendingHandledRequests.TryGetValue(request.MessageId, out cancellationTokenSource))
+				if (!this.pendingCancellableRequests.TryGetValue(request.MessageId, out cancellationTokenSource))
 				{
 					return;
 				}
@@ -241,7 +236,14 @@ namespace Dobble.Shared.Framework
 			// so we can continue to perform the next read on the TCP connection. So this is a void method which is not awaited by the caller.
 			// Never do async work inside an async void method. So move the work into the HandleIncommingRequestAsync and await it here.
 			// See: https://hackernoon.com/how-to-tame-the-async-void-in-c
-			await this.HandleIncommingRequestAsync(request);
+			try
+			{
+				await this.HandleIncommingRequestAsync(request);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Failed to handle request: {ex.Message}");
+			}
 		}
 
 		/// <summary>
@@ -256,9 +258,9 @@ namespace Dobble.Shared.Framework
 			IController controller = this.controllerFactory.CreateController(this.connectionContext, request.Path);
 
 			CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-			lock (this.pendingHandledRequests)
+			lock (this.pendingCancellableRequests)
 			{
-				this.pendingHandledRequests.Add(request.MessageId, cancellationTokenSource);
+				this.pendingCancellableRequests.Add(request.MessageId, cancellationTokenSource);
 			}
 
 			try
@@ -284,9 +286,9 @@ namespace Dobble.Shared.Framework
 			}
 			finally
 			{
-				lock (this.pendingHandledRequests)
+				lock (this.pendingCancellableRequests)
 				{
-					this.pendingHandledRequests.Remove(request.MessageId);
+					this.pendingCancellableRequests.Remove(request.MessageId);
 				}
 			}
 
@@ -321,7 +323,8 @@ namespace Dobble.Shared.Framework
 			try
 			{
 				Console.WriteLine($"Sending: {messageString}");
-				await this.writer.WriteLineAsync(messageString);
+				byte[] messageBytes = System.Text.Encoding.UTF8.GetBytes(messageString);
+				await this.sessionComm.WriteMessageAsync(messageBytes);
 			}
 			finally
 			{

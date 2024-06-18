@@ -34,7 +34,7 @@
 		/// <param name="path"></param>
 		/// <param name="controllerFactory"></param>
 		/// <returns> The protocol manager builder, this allows chaining of the register calls</returns>
-		public IProtocolManagerBuilder<TConnectionContext> RegisterController(string path, CreateController<TConnectionContext> controllerFactory)
+		public IProtocolManagerBuilder<TConnectionContext> RegisterController(string path, GenerateController<TConnectionContext> controllerFactory)
 		{
 			this.controllerFactory.RegisterController(path, controllerFactory);
 			return this;

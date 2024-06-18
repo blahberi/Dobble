@@ -56,7 +56,7 @@
     <Compile Include="DTOs\Paths.cs" />
     <Compile Include="DTOs\Users\UserName.cs" />
     <Compile Include="DTOs\Users\UserRegistration.cs" />
-    <Compile Include="Framework\AesSessionStream.cs" />
+    <Compile Include="Framework\EncryptedTcpComm.cs" />
     <Compile Include="Framework\ConnectionContext.cs" />
     <Compile Include="Framework\ControllerBase.cs" />
     <Compile Include="Framework\ControllerFactory.cs" />
@@ -66,7 +66,7 @@
     <Compile Include="Framework\IProtocolManager.cs" />
     <Compile Include="Framework\IProtocolSession.cs" />
     <Compile Include="Framework\IServiceLocationExtensions.cs" />
-    <Compile Include="Framework\ISessionStream.cs" />
+    <Compile Include="Framework\ISessionComm.cs" />
     <Compile Include="Framework\ProtcolHost.cs" />
     <Compile Include="Framework\ProtocolSession.cs" />
     <Compile Include="Framework\ProtocolManagerBuilder.cs" />

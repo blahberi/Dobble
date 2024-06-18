@@ -39,7 +39,7 @@ namespace Dobble.Server
 				{
 					TcpClient client = await this.listener.AcceptTcpClientAsync();
 					Console.WriteLine("Client connected.");
-					// Handle the request in a new task
+					// Handle the requests in a new task
 					_ = Task.Run(() => this.HandleClientAsync(client));
 				}
 			}
@@ -67,10 +67,8 @@ namespace Dobble.Server
 			byte[] aesKey = rsa.Decrypt(keyBytes, false);
 			byte[] aesIV = Convert.FromBase64String(ivString);
 
+			EncryptedTcpComm encryptedStream = new EncryptedTcpComm(client, aesKey, aesIV);
 
-			AesSessionStream encryptedStream = new AesSessionStream(client, aesKey, aesIV);
-
-			// Use encryptedClient in your session
 			using (IProtocolSession session = this.protocolManager.CreateSession(encryptedStream))
 			{
 				await session.WaitForSessionToEnd();
